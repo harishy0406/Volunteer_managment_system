@@ -34,13 +34,13 @@ function initializeStorage() {
                     id: 'evt' + Date.now(),
                     title: 'BLOOD DONATION CAMP',
                     description: 'The Youth Red Cross Association, VIT Vellore',
-                    date: '2025-04-09',
+                    date: '2025-04-10',
                     time: '09:00',
                     location: 'Vellore Institute of Technology',
                     volunteersNeeded: 100,
                     volunteers: ['vol1'],
                     organizerId: 'org1',  // Changed to match the organizer ID
-                    image: '',
+                    image: 'https://ibb.co/mCdHRwMr',
                     status: 'active'
                 }
             ];
