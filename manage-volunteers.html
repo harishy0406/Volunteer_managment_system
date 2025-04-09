@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Volunteers | Volunteer Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="../images/icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="manage-volunteers-container">
+        <header class="manage-header">
+            <button class="btn-back" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Back to Event
+            </button>
+            <h1>Manage Volunteers</h1>
+            <h2 id="event-title">Event Title</h2>
+        </header>
+        
+        <main class="manage-main">
+            <div class="volunteer-controls">
+                <div class="volunteer-limit">
+                    <label for="volunteer-limit">Volunteers Needed:</label>
+                    <input type="number" id="volunteer-limit" min="1">
+                    <button class="btn-primary" id="update-limit-btn">Update</button>
+                </div>
+                
+                <div class="volunteer-count">
+                    <span id="current-volunteers">0</span>/<span id="max-volunteers">0</span> volunteers
+                </div>
+            </div>
+            
+            <div class="volunteer-list-container">
+                <h3>Registered Volunteers</h3>
+                <div class="volunteer-list" id="volunteer-list">
+                    <div class="no-volunteers">
+                        <i class="fas fa-user-friends"></i>
+                        <p>No volunteers have registered yet</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/volunteers.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = urlParams.get('id');
+            
+            if (!eventId) {
+                alert('Event not found!');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const events = JSON.parse(localStorage.getItem('events')) || [];
+            const event = events.find(e => e.id === eventId);
+            
+            if (!event) {
+                alert('Event not found!');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser.role !== 'organizer' || currentUser.id !== event.organizerId) {
+                alert('You are not authorized to manage this event!');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            document.getElementById('event-title').textContent = event.title;
+            document.getElementById('volunteer-limit').value = event.volunteersNeeded;
+            document.getElementById('current-volunteers').textContent = event.volunteers.length;
+            document.getElementById('max-volunteers').textContent = event.volunteersNeeded;
+            
+            displayVolunteers(event.volunteers);
+            
+            document.getElementById('update-limit-btn').addEventListener('click', function() {
+                const newLimit = parseInt(document.getElementById('volunteer-limit').value);
+                if (newLimit < 1) {
+                    alert('Volunteers needed must be at least 1');
+                    return;
+                }
+                
+                updateVolunteerLimit(eventId, newLimit);
+            });
+        });
+        
+        function displayVolunteers(volunteerIds) {
+            const volunteerList = document.getElementById('volunteer-list');
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            if (volunteerIds.length === 0) {
+                volunteerList.innerHTML = `
+                    <div class="no-volunteers">
+                        <i class="fas fa-user-friends"></i>
+                        <p>No volunteers have registered yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            volunteerList.innerHTML = '';
+            
+            volunteerIds.forEach(volunteerId => {
+                const volunteer = users.find(u => u.id === volunteerId);
+                if (volunteer) {
+                    const volunteerElement = document.createElement('div');
+                    volunteerElement.className = 'volunteer-item';
+                    volunteerElement.innerHTML = `
+                        <div class="volunteer-avatar">${volunteer.name.charAt(0)}</div>
+                        <div class="volunteer-info">
+                            <h4>${volunteer.name}</h4>
+                            <p>${volunteer.email}</p>
+                        </div>
+                        <button class="btn-remove" data-id="${volunteerId}">
+                            <i class="fas fa-times"></i> Remove
+                        </button>
+                    `;
+                    volunteerList.appendChild(volunteerElement);
+                    
+                    volunteerElement.querySelector('.btn-remove').addEventListener('click', function() {
+                        removeVolunteer(eventId, volunteerId);
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

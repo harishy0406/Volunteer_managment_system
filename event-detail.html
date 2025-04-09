@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details | Volunteer Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="../images/icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="event-detail-container">
+        <header class="event-header">
+            <button class="btn-back" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <h1 id="event-title">Event Title</h1>
+        </header>
+        
+        <main class="event-main">
+            <div class="event-image-container">
+                <img id="event-image" src="https://via.placeholder.com/800x400" alt="Event Image">
+            </div>
+            
+            <div class="event-details">
+                <div class="event-info">
+                    <div class="info-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="event-date">Date: Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="event-time">Time: Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="event-location">Location: Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-users"></i>
+                        <span id="event-volunteers">Volunteers: Loading...</span>
+                    </div>
+                    <div class="info-item organizer-info">
+                        <i class="fas fa-user-tie"></i>
+                        <span id="event-organizer">Organizer: Loading...</span>
+                    </div>
+                    <div class="info-item event-status">
+                        <i class="fas fa-info-circle"></i>
+                        <span id="event-status">Status: Active</span>
+                    </div>
+                </div>
+                
+                <div class="event-description">
+                    <h3>About the Event</h3>
+                    <p id="event-description-text">Loading event description...</p>
+                </div>
+                
+                <div class="event-actions" id="event-actions">
+                    <!-- Buttons will be added dynamically -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/events.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = urlParams.get('id');
+            
+            if (!eventId) {
+                alert('Event not found!');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const events = JSON.parse(localStorage.getItem('events')) || [];
+            const event = events.find(e => e.id === eventId);
+            
+            if (!event) {
+                alert('Event not found!');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Initialize event status if not exists
+            if (!event.status) {
+                event.status = 'active'; // can be 'active', 'cancelled', or 'completed'
+                localStorage.setItem('events', JSON.stringify(events));
+            }
+            
+            document.getElementById('event-title').textContent = event.title;
+            document.getElementById('event-date').textContent = `Date: ${formatDate(event.date)}`;
+            document.getElementById('event-time').textContent = `Time: ${event.time}`;
+            document.getElementById('event-location').textContent = `Location: ${event.location}`;
+            document.getElementById('event-volunteers').textContent = 
+                `Volunteers: ${event.volunteers.length}/${event.volunteersNeeded}`;
+            document.getElementById('event-description-text').textContent = event.description;
+            document.getElementById('event-status').textContent = `Status: ${event.status.charAt(0).toUpperCase() + event.status.slice(1)}`;
+            
+            if (event.image) {
+                document.getElementById('event-image').src = event.image;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const organizer = users.find(u => u.id === event.organizerId);
+            if (organizer) {
+                document.getElementById('event-organizer').textContent = `Organizer: ${organizer.name}`;
+            }
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const actionDiv = document.getElementById('event-actions');
+            
+            if (currentUser.role === 'volunteer') {
+                const isRegistered = event.volunteers.includes(currentUser.id);
+                
+                if (isRegistered) {
+                    actionDiv.innerHTML = `
+                        <button class="btn-secondary" disabled>
+                            <i class="fas fa-check"></i> Already Registered
+                        </button>
+                    `;
+                } else if (event.volunteers.length >= event.volunteersNeeded || event.status !== 'active') {
+                    actionDiv.innerHTML = `
+                        <button class="btn-secondary" disabled>
+                            <i class="fas fa-times"></i> ${event.status !== 'active' ? 'Event ' + event.status.charAt(0).toUpperCase() + event.status.slice(1) : 'Event Full'}
+                        </button>
+                    `;
+                } else {
+                    actionDiv.innerHTML = `
+                        <button class="btn-primary" id="register-btn">
+                            <i class="fas fa-hand-holding-heart"></i> Register as Volunteer
+                        </button>
+                    `;
+                    
+                    document.getElementById('register-btn').addEventListener('click', function() {
+                        registerForEvent(eventId, currentUser.id);
+                    });
+                }
+            } else if (currentUser.role === 'organizer' && currentUser.id === event.organizerId) {
+                let buttonsHTML = `
+                    <div class="organizer-actions">
+                        <button class="btn-primary" id="manage-volunteers-btn">
+                            <i class="fas fa-users-cog"></i> Manage Volunteers
+                        </button>
+                `;
+                
+                if (event.status === 'active') {
+                    buttonsHTML += `
+                        <button class="btn-warning" id="cancel-event-btn">
+                            <i class="fas fa-ban"></i> Cancel Event
+                        </button>
+                        <button class="btn-success" id="complete-event-btn">
+                            <i class="fas fa-check-circle"></i> Mark Completed
+                        </button>
+                    `;
+                }
+                
+                buttonsHTML += `
+                        <button class="btn-danger" id="delete-event-btn">
+                            <i class="fas fa-trash-alt"></i> Delete Event
+                        </button>
+                    </div>
+                `;
+                
+                actionDiv.innerHTML = buttonsHTML;
+                
+                document.getElementById('manage-volunteers-btn').addEventListener('click', function() {
+                    window.location.href = `manage-volunteers.html?id=${eventId}`;
+                });
+                
+                if (event.status === 'active') {
+                    document.getElementById('cancel-event-btn').addEventListener('click', function() {
+                        if (confirm('Are you sure you want to cancel this event?')) {
+                            updateEventStatus(eventId, 'cancelled');
+                        }
+                    });
+                    
+                    document.getElementById('complete-event-btn').addEventListener('click', function() {
+                        if (confirm('Are you sure you want to mark this event as completed?')) {
+                            updateEventStatus(eventId, 'completed');
+                        }
+                    });
+                }
+                
+                document.getElementById('delete-event-btn').addEventListener('click', function() {
+                    if (confirm('Are you sure you want to permanently delete this event?')) {
+                        deleteEvent(eventId);
+                    }
+                });
+            }
+        });
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        function updateEventStatus(eventId, status) {
+            const events = JSON.parse(localStorage.getItem('events'));
+            const eventIndex = events.findIndex(e => e.id === eventId);
+            
+            if (eventIndex !== -1) {
+                events[eventIndex].status = status;
+                localStorage.setItem('events', JSON.stringify(events));
+                alert(`Event has been ${status}!`);
+                window.location.reload();
+            }
+        }
+        
+        function deleteEvent(eventId) {
+            let events = JSON.parse(localStorage.getItem('events'));
+            events = events.filter(e => e.id !== eventId);
+            localStorage.setItem('events', JSON.stringify(events));
+            alert('Event has been deleted!');
+            window.location.href = 'organizer-dash.html';
+        }
+    </script>
+</body>
+</html>

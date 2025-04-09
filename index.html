@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Hub - Login</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="../images/icon.png">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>Volunteer Hub</h1>
+            <div class="header-image-text">
+                <i class="fas fa-hands-helping header-icon"></i>
+                <p>Connecting organizers with passionate volunteers</p>
+            </div>
+        </div>
+        
+        <div class="auth-tabs">
+            <button class="tab-btn active" id="login-tab">Login</button>
+            <button class="tab-btn" id="signup-tab">Sign Up</button>
+        </div>
+        
+        <div class="auth-forms">
+            <form id="login-form" class="auth-form active">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-role">I am a</label>
+                    <select id="login-role" required>
+                        <option value="">Select role</option>
+                        <option value="organizer">Event Organizer</option>
+                        <option value="volunteer">Volunteer</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            
+            <form id="signup-form" class="auth-form">
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-role">I want to</label>
+                    <select id="signup-role" required>
+                        <option value="">Select role</option>
+                        <option value="organizer">Organize Events</option>
+                        <option value="volunteer">Volunteer for Events</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

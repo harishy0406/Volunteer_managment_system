@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Volunteer Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="../images/icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            margin-right: 25px;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .profile-info p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-card {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .detail-card h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .detail-item {
+            margin-bottom: 15px;
+        }
+
+        .detail-item label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .detail-item span {
+            display: block;
+            padding: 8px 10px;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-edit {
+            background-color: #4285F4;
+            color: white;
+        }
+
+        .btn-change-password {
+            background-color: #FBBC05;
+            color: #202124;
+        }
+
+        @media (max-width: 768px) {
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Volunteer Hub</h2>
+                <p>Volunteer Dashboard</p>
+            </div>
+            <div class="sidebar-menu">
+                <a href="volunteer-dash.html"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="my-events.html"><i class="fas fa-calendar-check"></i> My Events</a>
+                <a href="profile.html" class="active"><i class="fas fa-user"></i> Profile</a>
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+            </div>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-header">
+                <h1>My Profile</h1>
+                <div class="user-profile">
+                    <span id="header-user-name">Volunteer Name</span>
+                    <div class="avatar">V</div>
+                </div>
+            </div>
+            
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profile-avatar">V</div>
+                    <div class="profile-info">
+                        <h2 id="profile-name">Loading...</h2>
+                        <p id="profile-role">Volunteer</p>
+                        <p id="profile-join-date">Member since: Loading...</p>
+                    </div>
+                </div>
+                
+                <div class="profile-details">
+                    <div class="detail-card">
+                        <h3><i class="fas fa-id-card"></i> Personal Information</h3>
+                        <div class="detail-item">
+                            <label>Full Name</label>
+                            <span id="profile-full-name">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Email Address</label>
+                            <span id="profile-email">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>User ID</label>
+                            <span id="profile-user-id">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h3><i class="fas fa-chart-bar"></i> Activity Stats</h3>
+                        <div class="detail-item">
+                            <label>Total Events Joined</label>
+                            <span id="profile-events-count">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Upcoming Events</label>
+                            <span id="profile-upcoming-events">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Completed Events</label>
+                            <span id="profile-completed-events">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-primary btn-edit" id="edit-profile-btn">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                    <button class="btn-primary btn-change-password" id="change-password-btn">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/events.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Load profile data
+            loadProfileData(currentUser);
+            
+            // Setup logout button
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            });
+            
+            // Setup edit profile button
+            document.getElementById('edit-profile-btn').addEventListener('click', function() {
+                window.location.href = 'edit-profile.html';
+            });
+            
+            // Setup change password button
+            document.getElementById('change-password-btn').addEventListener('click', function() {
+                window.location.href = 'change-password.html';
+            });
+        });
+
+        function loadProfileData(user) {
+            // Set basic user info
+            document.getElementById('header-user-name').textContent = user.name;
+            document.getElementById('profile-name').textContent = user.name;
+            document.getElementById('profile-avatar').textContent = user.name.charAt(0).toUpperCase();
+            document.getElementById('profile-role').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+            document.getElementById('profile-full-name').textContent = user.name;
+            document.getElementById('profile-email').textContent = user.email;
+            document.getElementById('profile-user-id').textContent = user.id;
+            
+            // Set join date (if available)
+            if (user.joinDate) {
+                document.getElementById('profile-join-date').textContent = `Member since: ${formatDate(user.joinDate)}`;
+            } else {
+                document.getElementById('profile-join-date').textContent = `Member since: April 2025`;
+            }
+            
+            // Calculate event stats
+            const events = JSON.parse(localStorage.getItem('events')) || [];
+            const userEvents = events.filter(event => event.volunteers.includes(user.id));
+            const today = new Date();
+            
+            const upcomingEvents = userEvents.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate > today && (event.status === 'active' || !event.status);
+            }).length;
+            
+            const completedEvents = userEvents.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate < today || event.status === 'completed';
+            }).length;
+            
+            // Set event stats
+            document.getElementById('profile-events-count').textContent = userEvents.length;
+            document.getElementById('profile-upcoming-events').textContent = upcomingEvents;
+            document.getElementById('profile-completed-events').textContent = completedEvents;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Unknown';
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+    </script>
+</body>
+</html>
